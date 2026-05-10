@@ -18,6 +18,11 @@ class StateSeeder extends SeederOnce
             file_get_contents(__DIR__.'/../Datasets/states/states.json'), true
         );
 
+        $allowed = config('terra.allowed_countries', []);
+        if (! empty($allowed)) {
+            $states = array_values(array_filter($states, fn ($s) => in_array($s['country_code'], $allowed)));
+        }
+
         $idType = config('terra.id_type', 'id');
         $countryModel = config('terra.models.country');
         $model = config('terra.models.state');

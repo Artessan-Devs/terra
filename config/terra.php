@@ -14,6 +14,8 @@ return [
 
     'seed_once' => true,
 
+    'allowed_countries' => [],
+
     'models' => [
         'region' => Region::class,
         'subregion' => Subregion::class,

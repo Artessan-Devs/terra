@@ -17,6 +17,11 @@ class CurrencySeeder extends SeederOnce
             file_get_contents(__DIR__.'/../Datasets/countries/countries.json'), true
         );
 
+        $allowed = config('terra.allowed_countries', []);
+        if (! empty($allowed)) {
+            $countries = array_values(array_filter($countries, fn ($c) => in_array($c['iso2'], $allowed)));
+        }
+
         $model = config('terra.models.currency');
 
         $seen = [];

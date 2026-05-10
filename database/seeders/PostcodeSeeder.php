@@ -16,6 +16,12 @@ class PostcodeSeeder extends SeederOnce
     {
         $datasetsDir = __DIR__.'/../Datasets/postcodes/';
 
+        $files = glob($datasetsDir.'*.json');
+        $allowed = config('terra.allowed_countries', []);
+        if (! empty($allowed)) {
+            $files = array_values(array_filter($files, fn ($f) => in_array(pathinfo($f, PATHINFO_FILENAME), $allowed)));
+        }
+
         $idType = config('terra.id_type', 'id');
         $countryModel = config('terra.models.country');
         $stateModel = config('terra.models.state');
@@ -28,7 +34,7 @@ class PostcodeSeeder extends SeederOnce
 
         $total = 0;
 
-        foreach (glob($datasetsDir.'*.json') as $file) {
+        foreach ($files as $file) {
             $postcodes = json_decode(file_get_contents($file), true);
             if (empty($postcodes)) {
                 continue;
