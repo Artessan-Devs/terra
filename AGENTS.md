@@ -31,13 +31,13 @@ composer prepare              # manual equivalent (if hook skipped)
 ## Models (src/Models/)
 
 | Model | Table | Translatable | Relations |
-|---|---|---|---|
-| `Region` | `regions` | `localized_name` | — |
-| `Subregion` | `subregions` | `localized_name` | `belongsTo(Region)` |
-| `Country` | `countries` | `localized_name` | `belongsTo(Region)`, `belongsTo(Subregion)` |
-| `State` | `states` | `localized_name` | `belongsTo(Country)`, `belongsTo(State, parent_id)` |
-| `City` | `cities` | `localized_name` | `belongsTo(State)`, `belongsTo(Country)`, `belongsTo(City, parent_id)` |
-| `Currency` | `currencies` | — | — |
+|---|---|---|---|---|
+| `Region` | `regions` | `localized_name` | `hasMany(Subregion)`, `hasMany(Country)` |
+| `Subregion` | `subregions` | `localized_name` | `belongsTo(Region)`, `hasMany(Country)` |
+| `Country` | `countries` | `localized_name` | `belongsTo(Region)`, `belongsTo(Subregion)`, `belongsTo(Currency)`, `hasMany(Timezone)`, `hasMany(State)`, `hasMany(City)`, `hasMany(Postcode)` |
+| `State` | `states` | `localized_name` | `belongsTo(Country)`, `belongsTo(State, parent_id)`, `hasMany(State, children)`, `hasMany(City)`, `hasMany(Postcode)` |
+| `City` | `cities` | `localized_name` | `belongsTo(State)`, `belongsTo(Country)`, `belongsTo(City, parent_id)`, `hasMany(City, children)`, `hasMany(Postcode)` |
+| `Currency` | `currencies` | — | `hasMany(Country)` |
 | `Timezone` | `timezones` | — | `belongsTo(Country)` |
 | `Postcode` | `postcodes` | — | `belongsTo(Country)`, `belongsTo(State)`, `belongsTo(City)` |
 

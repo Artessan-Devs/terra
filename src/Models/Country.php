@@ -43,21 +43,36 @@ class Country extends Model
 
     public function region(): BelongsTo
     {
-        return $this->belongsTo(Region::class);
+        return $this->belongsTo(config('terra.models.region'));
     }
 
     public function subregion(): BelongsTo
     {
-        return $this->belongsTo(Subregion::class);
+        return $this->belongsTo(config('terra.models.subregion'));
     }
 
     public function currency(): BelongsTo
     {
-        return $this->belongsTo(Currency::class);
+        return $this->belongsTo(config('terra.models.currency'));
     }
 
     public function timezones(): HasMany
     {
-        return $this->hasMany(Timezone::class);
+        return $this->hasMany(config('terra.models.timezone'));
+    }
+
+    public function states(): HasMany
+    {
+        return $this->hasMany(config('terra.models.state'));
+    }
+
+    public function cities(): HasMany
+    {
+        return $this->hasMany(config('terra.models.city'));
+    }
+
+    public function postcodes(): HasMany
+    {
+        return $this->hasMany(config('terra.models.postcode'));
     }
 }

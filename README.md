@@ -53,15 +53,15 @@ Set `TERRA_ID_TYPE=uuid-v4` in your `.env` before running migrations. Extend the
 ## Models
 
 | Model | Translatable | Relations |
-|---|---|---|
-| `Region` | `localized_name` | — |
-| `Subregion` | `localized_name` | `belongsTo(Region)` |
-| `Country` | `localized_name` | `belongsTo(Region)`, `belongsTo(Subregion)`, `belongsTo(Currency)` |
-| `State` | `localized_name` | `belongsTo(Country)`, `belongsTo(State, parent_id)` |
-| `City` | `localized_name` | `belongsTo(State)`, `belongsTo(Country)`, `belongsTo(City, parent_id)` |
-| `Postcode` | — | `belongsTo(Country)`, `belongsTo(State)`, `belongsTo(City)` |
-| `Currency` | — | — |
+|---|---|---|---|
+| `Region` | `localized_name` | `hasMany(Subregion)`, `hasMany(Country)` |
+| `Subregion` | `localized_name` | `belongsTo(Region)`, `hasMany(Country)` |
+| `Country` | `localized_name` | `belongsTo(Region)`, `belongsTo(Subregion)`, `belongsTo(Currency)`, `hasMany(Timezone)`, `hasMany(State)`, `hasMany(City)`, `hasMany(Postcode)` |
+| `State` | `localized_name` | `belongsTo(Country)`, `belongsTo(State, parent_id)`, `hasMany(State, children)`, `hasMany(City)`, `hasMany(Postcode)` |
+| `City` | `localized_name` | `belongsTo(State)`, `belongsTo(Country)`, `belongsTo(City, parent_id)`, `hasMany(City, children)`, `hasMany(Postcode)` |
+| `Currency` | — | `hasMany(Country)` |
 | `Timezone` | — | `belongsTo(Country)` |
+| `Postcode` | — | `belongsTo(Country)`, `belongsTo(State)`, `belongsTo(City)` |
 
 ## Testing
 

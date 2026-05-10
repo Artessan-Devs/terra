@@ -5,6 +5,7 @@ namespace ArtessanDevs\Terra\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Translatable\Attributes\Translatable;
 use Spatie\Translatable\HasTranslations;
 
@@ -35,11 +36,26 @@ class State extends Model
 
     public function country(): BelongsTo
     {
-        return $this->belongsTo(Country::class);
+        return $this->belongsTo(config('terra.models.country'));
     }
 
     public function parent(): BelongsTo
     {
-        return $this->belongsTo(State::class, 'parent_id');
+        return $this->belongsTo(config('terra.models.state'), 'parent_id');
+    }
+
+    public function children(): HasMany
+    {
+        return $this->hasMany(config('terra.models.state'), 'parent_id');
+    }
+
+    public function cities(): HasMany
+    {
+        return $this->hasMany(config('terra.models.city'));
+    }
+
+    public function postcodes(): HasMany
+    {
+        return $this->hasMany(config('terra.models.postcode'));
     }
 }

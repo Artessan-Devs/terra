@@ -27,16 +27,16 @@ class Postcode extends Model
 
     public function country(): BelongsTo
     {
-        return $this->belongsTo(Country::class);
+        return $this->belongsTo(config('terra.models.country'));
     }
 
     public function state(): BelongsTo
     {
-        return $this->belongsTo(State::class);
+        return $this->belongsTo(config('terra.models.state'));
     }
 
     public function city(): BelongsTo
     {
-        return $this->belongsTo(City::class);
+        return $this->belongsTo(config('terra.models.city'));
     }
 }

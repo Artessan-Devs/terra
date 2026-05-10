@@ -21,6 +21,6 @@ class Timezone extends Model
 
     public function country(): BelongsTo
     {
-        return $this->belongsTo(Country::class);
+        return $this->belongsTo(config('terra.models.country'));
     }
 }
