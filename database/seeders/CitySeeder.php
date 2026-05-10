@@ -36,7 +36,7 @@ class CitySeeder extends SeederOnce
                 $inserts = [];
                 foreach ($chunk as $data) {
                     $row = [
-                        'sync_id' => $data['id'],
+                        'sync_id' => $data['id'] ?? null,
                         'name' => $data['name'],
                         'localized_name' => json_encode($this->parseTranslations($data), JSON_UNESCAPED_UNICODE),
                         'state_id' => $stateMap[$data['state_id']] ?? null,

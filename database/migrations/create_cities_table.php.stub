@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('cities', function (Blueprint $table) use ($idType) {
             $this->pk($table, $idType);
 
-            $table->unsignedBigInteger('sync_id')->unique();
+            $table->unsignedBigInteger('sync_id')->nullable()->unique();
             $table->string('name');
             $table->json('localized_name');
             $this->fk($table, 'state_id');

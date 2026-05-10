@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('postcodes', function (Blueprint $table) use ($idType) {
             $this->pk($table, $idType);
 
-            $table->unsignedBigInteger('sync_id')->unique();
+            $table->unsignedBigInteger('sync_id')->nullable()->unique();
             $table->string('code');
             $this->fk($table, 'country_id');
             $table->string('country_code', 2);

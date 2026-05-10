@@ -38,7 +38,7 @@ class PostcodeSeeder extends SeederOnce
                 $inserts = [];
                 foreach ($chunk as $data) {
                     $row = [
-                        'sync_id' => $data['id'],
+                        'sync_id' => $data['id'] ?? null,
                         'code' => $data['code'],
                         'country_id' => $countryMap[$data['country_id']],
                         'country_code' => $data['country_code'],
