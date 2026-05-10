@@ -26,8 +26,8 @@ return new class extends Migration
             $table->string('native')->nullable();
             $table->unsignedBigInteger('population')->nullable();
             $table->decimal('gdp', 20, 2)->nullable();
-            $this->fk($table, 'region_id');
-            $this->fk($table, 'subregion_id');
+            $this->fk($table, 'region_id', nullable: true);
+            $this->fk($table, 'subregion_id', nullable: true);
             $table->string('nationality')->nullable();
             $table->decimal('area_sq_km', 15, 2)->nullable();
             $table->string('postal_code_format')->nullable();
