@@ -18,8 +18,8 @@ return new class extends Migration
             $table->string('code');
             $this->fk($table, 'country_id');
             $table->string('country_code', 2);
-            $this->fk($table, 'state_id');
-            $table->string('state_code');
+            $this->fk($table, 'state_id', nullable: true);
+            $table->string('state_code')->nullable();
             $this->fk($table, 'city_id', nullable: true);
             $table->string('locality_name')->nullable();
             $table->string('type')->nullable();
