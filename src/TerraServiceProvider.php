@@ -22,12 +22,12 @@ class TerraServiceProvider extends PackageServiceProvider
             ->hasMigrations(
                 'create_regions_table',
                 'create_subregions_table',
+                'create_currencies_table',
                 'create_countries_table',
                 'create_states_table',
                 'create_cities_table',
-                'create_postcodes_table',
                 'create_timezones_table',
-                'create_currencies_table',
+                'create_postcodes_table',
             )
             ->hasCommand(TerraCommand::class);
     }

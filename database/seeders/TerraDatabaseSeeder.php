@@ -15,6 +15,7 @@ class TerraDatabaseSeeder extends SeederOnce
     {
         $this->call(RegionSeeder::class);
         $this->call(SubregionSeeder::class);
+        $this->call(CurrencySeeder::class);
         $this->call(CountrySeeder::class);
         $this->call(StateSeeder::class);
         $this->call(CitySeeder::class);

@@ -25,18 +25,10 @@ class CountrySeeder extends SeederOnce
 
         $regionMap = $regionModel::pluck('id', 'sync_id');
         $subregionMap = $subregionModel::pluck('id', 'sync_id');
+        $currencyMap = $currencyModel::pluck('id', 'code');
 
         foreach ($countries as $data) {
-            $currency = null;
-            if (! empty($data['currency'])) {
-                $currency = $currencyModel::firstOrCreate(
-                    ['code' => $data['currency']],
-                    [
-                        'name' => $data['currency_name'] ?? null,
-                        'symbol' => $data['currency_symbol'] ?? null,
-                    ]
-                );
-            }
+            $currencyId = ! empty($data['currency']) ? ($currencyMap[$data['currency']] ?? null) : null;
 
             $country = $model::create([
                 'sync_id' => $data['id'],
@@ -47,7 +39,7 @@ class CountrySeeder extends SeederOnce
                 'numeric_code' => $data['numeric_code'],
                 'phonecode' => $data['phonecode'],
                 'capital' => $data['capital'] ?? null,
-                'currency_id' => $currency?->id,
+                'currency_id' => $currencyId,
                 'tld' => $data['tld'] ?? null,
                 'native' => $data['native'] ?? null,
                 'population' => $data['population'] ?? null,

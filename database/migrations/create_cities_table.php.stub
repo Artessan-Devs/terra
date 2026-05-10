@@ -23,13 +23,17 @@ return new class extends Migration
             $table->string('country_code', 2);
             $table->string('type')->nullable();
             $table->unsignedTinyInteger('level')->nullable();
-            $this->fk($table, 'parent_id', 'cities', nullable: true);
+            $this->col($table, 'parent_id', $idType)->nullable();
             $table->string('latitude');
             $table->string('longitude');
             $table->string('native')->nullable();
             $table->unsignedBigInteger('population')->nullable();
             $table->string('timezone')->nullable();
             $table->timestamps();
+        });
+
+        Schema::table('cities', function (Blueprint $table) use ($idType) {
+            $table->foreign('parent_id')->references('id')->on('cities')->cascadeOnDelete();
         });
     }
 
@@ -42,26 +46,22 @@ return new class extends Migration
         };
     }
 
-    private function fk(Blueprint $table, string $column, ?string $ref = null, bool $nullable = false): void
+    private function col(Blueprint $table, string $column, string $type): \Illuminate\Database\Schema\ColumnDefinition
+    {
+        return match ($type) {
+            'ulid' => $table->ulid($column),
+            'uuid-v4', 'uuid-v7' => $table->uuid($column),
+            default => $table->unsignedBigInteger($column),
+        };
+    }
+
+    private function fk(Blueprint $table, string $column, ?string $ref = null): void
     {
         $type = config('terra.id_type', 'id');
         $ref ??= Str::plural(Str::beforeLast($column, '_id'));
 
-        if ($nullable) {
-            match ($type) {
-                'ulid' => $table->ulid($column)->nullable(),
-                'uuid-v4', 'uuid-v7' => $table->uuid($column)->nullable(),
-                default => $table->unsignedBigInteger($column)->nullable(),
-            };
-            $table->foreign($column)->references('id')->on($ref)->cascadeOnDelete();
-        } else {
-            $col = match ($type) {
-                'ulid' => $table->foreignUlid($column),
-                'uuid-v4', 'uuid-v7' => $table->foreignUuid($column),
-                default => $table->foreignId($column),
-            };
-            $col->constrained($ref)->cascadeOnDelete();
-        }
+        $this->col($table, $column, $type);
+        $table->foreign($column)->references('id')->on($ref)->cascadeOnDelete();
     }
 
     public function down()
