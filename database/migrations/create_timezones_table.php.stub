@@ -46,11 +46,12 @@ return new class extends Migration
             };
             $table->foreign($column)->references('id')->on($ref)->cascadeOnDelete();
         } else {
-            match ($type) {
+            $col = match ($type) {
                 'ulid' => $table->foreignUlid($column),
                 'uuid-v4', 'uuid-v7' => $table->foreignUuid($column),
                 default => $table->foreignId($column),
-            }->constrained($ref)->cascadeOnDelete();
+            };
+            $col->constrained($ref)->cascadeOnDelete();
         }
     }
 
