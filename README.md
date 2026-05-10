@@ -1,60 +1,67 @@
-# Comprehensive world geodata package for Laravel including countries, states, cities, currencies, translations, and geographic references.
+# Laravel Terra — comprehensive world geodata
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/artessan-devs/terra.svg?style=flat-square)](https://packagist.org/packages/artessan-devs/terra)
-[![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/artessan-devs/terra/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/artessan-devs/terra/actions?query=workflow%3Arun-tests+branch%3Amain)
-[![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/artessan-devs/terra/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/artessan-devs/terra/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
+[![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/artessan-devs/terra/run-tests.yml?branch=development&label=tests&style=flat-square)](https://github.com/artessan-devs/terra/actions?query=workflow%3Arun-tests+branch%3Adevelopment)
+[![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/artessan-devs/terra/fix-php-code-style-issues.yml?branch=development&label=code%20style&style=flat-square)](https://github.com/artessan-devs/terra/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Adevelopment)
 [![Total Downloads](https://img.shields.io/packagist/dt/artessan-devs/terra.svg?style=flat-square)](https://packagist.org/packages/artessan-devs/terra)
 
-This is where your description should go. Limit it to a paragraph or two. Consider adding a small example.
+A Laravel package for countries, states, cities, currencies, postcodes, and timezones with multi-language support.
 
-## Support us
-
-[<img src="https://github-ads.s3.eu-central-1.amazonaws.com/Terra.jpg?t=1" width="419px" />](https://spatie.be/github-ad-click/Terra)
-
-We invest a lot of resources into creating [best in class open source packages](https://spatie.be/open-source). You can support us by [buying one of our paid products](https://spatie.be/open-source/support-us).
-
-We highly appreciate you sending us a postcard from your hometown, mentioning which of our package(s) you are using. You'll find our address on [our contact page](https://spatie.be/about-us). We publish all received postcards on [our virtual postcard wall](https://spatie.be/open-source/postcards).
+Data sourced from [dr5hn/countries-states-cities-database](https://github.com/dr5hn/countries-states-cities-database).
 
 ## Installation
-
-You can install the package via composer:
 
 ```bash
 composer require artessan-devs/terra
 ```
 
-You can publish and run the migrations with:
+Publish and run migrations:
 
 ```bash
 php artisan vendor:publish --tag="terra-migrations"
 php artisan migrate
 ```
 
-You can publish the config file with:
+Publish the config:
 
 ```bash
 php artisan vendor:publish --tag="terra-config"
 ```
 
-This is the contents of the published config file:
-
-```php
-return [
-];
-```
-
-Optionally, you can publish the views using
-
-```bash
-php artisan vendor:publish --tag="terra-views"
-```
-
 ## Usage
 
-```php
-$terra = new ArtessanDevs\Terra();
-echo $terra->echoPhrase('Hello, ArtessanDevs!');
+Seed the geodata:
+
+```bash
+php artisan terra:seed
 ```
+
+Query models:
+
+```php
+use App\Models\Country;
+
+$countries = Country::where('iso2', 'US')->first();
+echo $countries->name; // United States
+echo $countries->translation('name', 'es'); // Estados Unidos
+```
+
+### Choosing a primary key type
+
+Set `TERRA_ID_TYPE=uuid-v4` in your `.env` before running migrations. Extend the model classes to add `HasUuids` / `HasUlids` traits, then register them in `config('terra.models.*')`.
+
+## Models
+
+| Model | Translatable | Relations |
+|---|---|---|
+| `Region` | `localized_name` | — |
+| `Subregion` | `localized_name` | `belongsTo(Region)` |
+| `Country` | `localized_name` | `belongsTo(Region)`, `belongsTo(Subregion)`, `belongsTo(Currency)` |
+| `State` | `localized_name` | `belongsTo(Country)`, `belongsTo(State, parent_id)` |
+| `City` | `localized_name` | `belongsTo(State)`, `belongsTo(Country)`, `belongsTo(City, parent_id)` |
+| `Postcode` | — | `belongsTo(Country)`, `belongsTo(State)`, `belongsTo(City)` |
+| `Currency` | — | — |
+| `Timezone` | — | `belongsTo(Country)` |
 
 ## Testing
 
@@ -62,23 +69,14 @@ echo $terra->echoPhrase('Hello, ArtessanDevs!');
 composer test
 ```
 
+## Data source
+
+This package ships with geodata from [dr5hn/countries-states-cities-database](https://github.com/dr5hn/countries-states-cities-database) (MIT license). The dataset includes translations for 250+ countries, 5,000+ states, 150,000+ cities, and postcodes.
+
 ## Changelog
 
-Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
-
-## Contributing
-
-Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
-
-## Security Vulnerabilities
-
-Please review [our security policy](../../security/policy) on how to report security vulnerabilities.
-
-## Credits
-
-- [J. Casanova](https://github.com/artssan)
-- [All Contributors](../../contributors)
+Please see [CHANGELOG](CHANGELOG.md) for recent changes.
 
 ## License
 
-The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
+The MIT License (MIT). See [LICENSE](LICENSE.md).
