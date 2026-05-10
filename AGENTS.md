@@ -43,9 +43,7 @@ composer prepare              # manual equivalent (if hook skipped)
 
 All models use `sync_id` (integer, unique) to store the original JSON `id` field. The real PK (`id`) is free for auto-increment, UUID v4/v7, or ULID — controlled by `config('terra.id_type')`.
 
-All models use the `HasIdType` trait (in `src/Models/Concerns/`) which reads the config and auto-generates IDs during `creating`. Bulk seeders (states, cities, postcodes) also generate IDs inline.
-
-Model classes are configurable via `config('terra.models.*')`. Override any model with a subclass to add `HasUuids` or `HasUlids` traits for non-auto-increment PKs.
+Model classes are configurable via `config('terra.models.*')`. Override any model with a subclass to add `HasUuids` or `HasUlids` traits for non-auto-increment PKs. Bulk seeders (states, cities, postcodes) generate IDs inline for UUID/ULID types since `::insert()` bypasses Eloquent events.
 
 Translatable models use the `#[Translatable('localized_name')]` attribute (Spatie v6+).
 `name` is the plain string official name; `localized_name` (JSON) holds all locale translations.
