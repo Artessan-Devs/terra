@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 
 return new class extends Migration
 {
@@ -33,18 +34,22 @@ return new class extends Migration
     private function fk(Blueprint $table, string $column, ?string $ref = null, bool $nullable = false): void
     {
         $type = config('terra.id_type', 'id');
-
-        $col = match ($type) {
-            'ulid' => $table->foreignUlid($column),
-            'uuid-v4', 'uuid-v7' => $table->foreignUuid($column),
-            default => $table->foreignId($column),
-        };
+        $ref ??= Str::plural(Str::beforeLast($column, '_id'));
 
         if ($nullable) {
-            $col->nullable();
+            match ($type) {
+                'ulid' => $table->ulid($column)->nullable(),
+                'uuid-v4', 'uuid-v7' => $table->uuid($column)->nullable(),
+                default => $table->unsignedBigInteger($column)->nullable(),
+            };
+            $table->foreign($column)->references('id')->on($ref)->cascadeOnDelete();
+        } else {
+            match ($type) {
+                'ulid' => $table->foreignUlid($column),
+                'uuid-v4', 'uuid-v7' => $table->foreignUuid($column),
+                default => $table->foreignId($column),
+            }->constrained($ref)->cascadeOnDelete();
         }
-
-        $col->constrained($ref)->cascadeOnDelete();
     }
 
     public function down()
