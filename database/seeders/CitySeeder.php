@@ -2,6 +2,7 @@
 
 namespace ArtessanDevs\Terra\Database\Seeders;
 
+use Illuminate\Support\Str;
 use Kdabrow\SeederOnce\SeederOnce;
 
 class CitySeeder extends SeederOnce
@@ -15,6 +16,7 @@ class CitySeeder extends SeederOnce
     {
         $datasetsDir = __DIR__.'/../Datasets/cities/';
 
+        $idType = config('terra.id_type', 'id');
         $countryModel = config('terra.models.country');
         $stateModel = config('terra.models.state');
         $model = config('terra.models.city');
@@ -33,7 +35,7 @@ class CitySeeder extends SeederOnce
             foreach (array_chunk($cities, 500) as $chunk) {
                 $inserts = [];
                 foreach ($chunk as $data) {
-                    $inserts[] = [
+                    $row = [
                         'sync_id' => $data['id'],
                         'name' => $data['name'],
                         'localized_name' => json_encode($this->parseTranslations($data), JSON_UNESCAPED_UNICODE),
@@ -51,6 +53,12 @@ class CitySeeder extends SeederOnce
                         'created_at' => now(),
                         'updated_at' => now(),
                     ];
+
+                    if ($idType !== 'id') {
+                        $row['id'] = $this->generateId($idType);
+                    }
+
+                    $inserts[] = $row;
                     $total++;
                 }
                 $model::insert($inserts);
@@ -67,6 +75,15 @@ class CitySeeder extends SeederOnce
         }
 
         $this->command->info('Cities seeded: '.$total);
+    }
+
+    protected function generateId(string $type): string
+    {
+        return match ($type) {
+            'uuid-v7' => (string) Str::uuid7(),
+            'ulid' => (string) Str::ulid(),
+            default => (string) Str::uuid(),
+        };
     }
 
     protected function parseTranslations(array $data): array

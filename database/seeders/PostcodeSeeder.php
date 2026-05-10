@@ -2,6 +2,7 @@
 
 namespace ArtessanDevs\Terra\Database\Seeders;
 
+use Illuminate\Support\Str;
 use Kdabrow\SeederOnce\SeederOnce;
 
 class PostcodeSeeder extends SeederOnce
@@ -15,6 +16,7 @@ class PostcodeSeeder extends SeederOnce
     {
         $datasetsDir = __DIR__.'/../Datasets/postcodes/';
 
+        $idType = config('terra.id_type', 'id');
         $countryModel = config('terra.models.country');
         $stateModel = config('terra.models.state');
         $cityModel = config('terra.models.city');
@@ -35,7 +37,7 @@ class PostcodeSeeder extends SeederOnce
             foreach (array_chunk($postcodes, 500) as $chunk) {
                 $inserts = [];
                 foreach ($chunk as $data) {
-                    $inserts[] = [
+                    $row = [
                         'sync_id' => $data['id'],
                         'code' => $data['code'],
                         'country_id' => $countryMap[$data['country_id']],
@@ -51,6 +53,12 @@ class PostcodeSeeder extends SeederOnce
                         'created_at' => now(),
                         'updated_at' => now(),
                     ];
+
+                    if ($idType !== 'id') {
+                        $row['id'] = $this->generateId($idType);
+                    }
+
+                    $inserts[] = $row;
                     $total++;
                 }
                 $model::insert($inserts);
@@ -58,5 +66,14 @@ class PostcodeSeeder extends SeederOnce
         }
 
         $this->command->info('Postcodes seeded: '.$total);
+    }
+
+    protected function generateId(string $type): string
+    {
+        return match ($type) {
+            'uuid-v7' => (string) Str::uuid7(),
+            'ulid' => (string) Str::ulid(),
+            default => (string) Str::uuid(),
+        };
     }
 }

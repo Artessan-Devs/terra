@@ -2,6 +2,7 @@
 
 namespace ArtessanDevs\Terra\Database\Seeders;
 
+use Illuminate\Support\Str;
 use Kdabrow\SeederOnce\SeederOnce;
 
 class StateSeeder extends SeederOnce
@@ -17,6 +18,7 @@ class StateSeeder extends SeederOnce
             file_get_contents(__DIR__.'/../Datasets/states/states.json'), true
         );
 
+        $idType = config('terra.id_type', 'id');
         $countryModel = config('terra.models.country');
         $model = config('terra.models.state');
 
@@ -26,7 +28,7 @@ class StateSeeder extends SeederOnce
         foreach ($chunks as $chunk) {
             $inserts = [];
             foreach ($chunk as $data) {
-                $inserts[] = [
+                $row = [
                     'sync_id' => $data['id'],
                     'name' => $data['name'],
                     'localized_name' => json_encode($this->parseTranslations($data), JSON_UNESCAPED_UNICODE),
@@ -45,6 +47,12 @@ class StateSeeder extends SeederOnce
                     'created_at' => now(),
                     'updated_at' => now(),
                 ];
+
+                if ($idType !== 'id') {
+                    $row['id'] = $this->generateId($idType);
+                }
+
+                $inserts[] = $row;
             }
             $model::insert($inserts);
         }
@@ -61,6 +69,15 @@ class StateSeeder extends SeederOnce
         }
 
         $this->command->info('States seeded: '.count($states));
+    }
+
+    protected function generateId(string $type): string
+    {
+        return match ($type) {
+            'uuid-v7' => (string) Str::uuid7(),
+            'ulid' => (string) Str::ulid(),
+            default => (string) Str::uuid(),
+        };
     }
 
     protected function parseTranslations(array $data): array
