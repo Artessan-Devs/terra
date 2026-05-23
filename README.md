@@ -9,69 +9,23 @@ A Laravel package for countries, states, cities, currencies, postcodes, and time
 
 Data sourced from [dr5hn/countries-states-cities-database](https://github.com/dr5hn/countries-states-cities-database).
 
-## Installation
+## Getting started
 
 ```bash
 composer require artessan-devs/terra
-```
-
-Publish and run migrations:
-
-```bash
 php artisan vendor:publish --tag="terra-migrations"
 php artisan migrate
-```
-
-Publish the config:
-
-```bash
-php artisan vendor:publish --tag="terra-config"
-```
-
-## Usage
-
-Seed the geodata:
-
-```bash
 php artisan terra:seed
 ```
 
-Query models:
-
 ```php
-use App\Models\Country;
-
-$countries = Country::where('iso2', 'US')->first();
-echo $countries->name; // United States
-echo $countries->translation('name', 'es'); // Estados Unidos
+$country = Country::where('iso2', 'US')->first();
+echo $country->localized_name; // United States
 ```
 
-### Choosing a primary key type
+## Documentation
 
-Set `TERRA_ID_TYPE=uuid-v4` in your `.env` before running migrations. Extend the model classes to add `HasUuids` / `HasUlids` traits, then register them in `config('terra.models.*')`.
-
-## Models
-
-| Model | Translatable | Relations |
-|---|---|---|---|
-| `Region` | `localized_name` | `hasMany(Subregion)`, `hasMany(Country)` |
-| `Subregion` | `localized_name` | `belongsTo(Region)`, `hasMany(Country)` |
-| `Country` | `localized_name` | `belongsTo(Region)`, `belongsTo(Subregion)`, `belongsTo(Currency)`, `hasMany(Timezone)`, `hasMany(State)`, `hasMany(City)`, `hasMany(Postcode)` |
-| `State` | `localized_name` | `belongsTo(Country)`, `belongsTo(State, parent_id)`, `hasMany(State, children)`, `hasMany(City)`, `hasMany(Postcode)` |
-| `City` | `localized_name` | `belongsTo(State)`, `belongsTo(Country)`, `belongsTo(City, parent_id)`, `hasMany(City, children)`, `hasMany(Postcode)` |
-| `Currency` | — | `hasMany(Country)` |
-| `Timezone` | — | `belongsTo(Country)` |
-| `Postcode` | — | `belongsTo(Country)`, `belongsTo(State)`, `belongsTo(City)` |
-
-## Testing
-
-```bash
-composer test
-```
-
-## Data source
-
-This package ships with geodata from [dr5hn/countries-states-cities-database](https://github.com/dr5hn/countries-states-cities-database) (MIT license). The dataset includes translations for 250+ countries, 5,000+ states, 150,000+ cities, and postcodes.
+See the [docs index](docs/index.md) for installation, usage, models, architecture, and more.
 
 ## Changelog
 

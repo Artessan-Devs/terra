@@ -2,7 +2,7 @@ name: "Update Changelog"
 
 on:
   release:
-    types: [released]
+    types: [released, prereleased]
 
 permissions:
   contents: write
@@ -13,10 +13,19 @@ jobs:
     timeout-minutes: 5
 
     steps:
+      - name: Determine branch
+        id: branch
+        run: |
+          if [ "${{ github.event.release.prerelease }}" = "true" ]; then
+            echo "branch=development" >> $GITHUB_OUTPUT
+          else
+            echo "branch=main" >> $GITHUB_OUTPUT
+          fi
+
       - name: Checkout code
         uses: actions/checkout@v6
         with:
-          ref: main
+          ref: ${{ steps.branch.outputs.branch }}
 
       - name: Update Changelog
         uses: stefanzweifel/changelog-updater-action@v1
@@ -27,6 +36,6 @@ jobs:
       - name: Commit updated CHANGELOG
         uses: stefanzweifel/git-auto-commit-action@v7
         with:
-          branch: main
+          branch: ${{ steps.branch.outputs.branch }}
           commit_message: Update CHANGELOG
           file_pattern: CHANGELOG.md
