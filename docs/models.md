@@ -1,7 +1,7 @@
 # Models
 
 | Model | Table | Translatable | Relations |
-|---|---|---|---|---|
+|---|---|---|---|
 | `Region` | `regions` | `localized_name` | `hasMany(Subregion)`, `hasMany(Country)` |
 | `Subregion` | `subregions` | `localized_name` | `belongsTo(Region)`, `hasMany(Country)` |
 | `Country` | `countries` | `localized_name` | `belongsTo(Region)`, `belongsTo(Subregion)`, `belongsTo(Currency)`, `hasMany(Timezone)`, `hasMany(State)`, `hasMany(City)`, `hasMany(Postcode)` |
